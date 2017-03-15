@@ -1,0 +1,29 @@
+@font-face {
+    font-family: "slabo";
+    src: url("fonts/Slabo_27px/Slabo27px-Regular.ttf");
+}
+
+@font-face {
+    font-family: "roboto";
+    src: url("fonts/Roboto/Roboto-Regular.ttf");
+}
+
+@font-face {
+    font-family: "robotothin";
+    src: url("fonts/Roboto/Roboto-Thin.ttf");
+}
+
+.small_things{
+    font-size: 70%;
+}
+
+.center_me {
+    margin: auto;
+    text-align: center;
+}
+
+.big_title {
+    font-family: "robotothin";
+    font-size:400%;
+    margin-top:50px;
+}
