@@ -1,6 +1,14 @@
 //PLEASE PUT THIS SCRIPT AFTER THE LITTLE ONE LINER SCRIPT THAT GETS $_POST VAR IN PHP
 //On devrait pouvoir récuperer ce qu'il y a dans $_POST à l'intérieur de la variable game_data si la ligne précédente a été respectée
 //console.log(game_data);
+var cancel_atk = function() {
+    //NOTHING
+}
+
+var confirm_atk = function() {
+    //NOTHING
+}
+
 $.getScript('./js/quintus_conf.js', function()
 {
     $.getScript('./js/game_class.js', function()
@@ -10,6 +18,7 @@ $.getScript('./js/quintus_conf.js', function()
         var planet_size = 64;
         var min_dist_from_borders = 64;
         var max_tries_place_planets = 40;
+        var space_ship_size = 16;
         
         var player_colors = [
             "#3bc4f7",
@@ -58,6 +67,14 @@ $.getScript('./js/quintus_conf.js', function()
             
             return [new_x,new_y];
         }
+        
+        cancel_atk = function() {
+            document.getElementById("attack_menu").classList.add("hide");
+        }
+        
+        confirm_atk = function() {
+            document.getElementById("attack_menu").classList.add("hide");
+        }
         //END UTILITY FUNCTIONS
         
         function setUp (stage) {
@@ -103,13 +120,14 @@ $.getScript('./js/quintus_conf.js', function()
         });
 
         var files = [
-            'planet_1.png'
+            'planet_1.png',
+            'spaceship.png'
         ]
 
         Q.load(files.join(','), function() {
             // Sprites sheets can be created manually
             Q.sheet("planets","planet_1.png", { tilew: planet_size, tileh: planet_size });
-
+            Q.sheet("spaceship","spaceship.png", { tilew: space_ship_size, tileh: space_ship_size});
             // Finally, call stageScene to run the game
             Q.stageScene("space");
         });

@@ -23,3 +23,6 @@ Q.input.mouseControls({cursor:true});
 
 //No gravity, space game
 Q.gravityY = 0;
+
+//Enable touch
+Q.touch(Q.SPRITE_ALL);
