@@ -14,6 +14,7 @@
 }
 
 .small_things{
+    font-family: "robotothin";
     font-size: 70%;
 }
 
@@ -26,4 +27,24 @@
     font-family: "robotothin";
     font-size:400%;
     margin-top:50px;
+}
+
+.radios {
+    margin-top:20px;
+}
+
+.labels {
+    font-size: 120%;
+}
+
+.space_form {
+    font-family: "roboto";
+}
+
+.legend {
+    font-size: 150%;
+}
+
+.big_bt {
+    font-size: 140%;
 }
