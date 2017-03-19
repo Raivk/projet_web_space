@@ -11,7 +11,7 @@
         <form class="pure-form pure-form-stacked space_form" style="width: 50%; margin:auto; margin-top:50px; text-align:center;" action="game.php" method="post">
             <fieldset>
                 <legend class="legend">Configurez la partie</legend>
-                <label for="nb_planets" class="labels">Nombre de planètes par joueur</label>
+                <label for="nb_planets" class="labels">Nombre de planètes</label>
                 <input id="nb_planets" class="pure-input-1" type="number" name="nb_planets"/>
                 
                 <label for="pop_begin" class="labels">Population de départ</label>

@@ -1,5 +1,9 @@
+//Première classe, Planet
 Q.Sprite.extend('Planet', {
+    
+    //Constructeur
     init: function (p) {
+        //Initialisation des attributs par défaut (Fournir un objet à la construction qui change certain de ces attributs "override" leur initialisation par défaut)
         this._super(p, {
             sheet: 'planets',
             name: "defaultname",
@@ -15,45 +19,71 @@ Q.Sprite.extend('Planet', {
             my_turn:true,
             growth:Math.floor((Math.random() * 10) + 1)
         });
+        //Activation des évenements de drag, fin de drag, et activation du module 2D
         this.on("drag");
         this.on("touchEnd");
         this.add('2d');
     },
+    //Fonction à appeler pour incrémenter la population suivant la croissance de la planète. NE FAIT RIEN SI LA PLANETE EST NEUTRE (player mit à 0)
     inc_pop: function() {
         if (this.p.player != 0) {
             this.p.population += this.p.growth;
         }
     },
+    //Fonction appelée à chaque frame, donc si le jeu tourne à 30 images par seconde, elle sera appelée 30 fois par seconde.
+    //Elle est appelée avant le dessin de l'image
     step: function (dt) {
-        this.p.pop_label_container.p.x = this.p.x;
-        this.p.pop_label_container.p.y = this.p.y;
-        this.p.pop_label.p.label = this.p.population + "";
-        this.p.pop_label_container.fit();
+        //Si le label est bien défini
+        if (this.p.pop_label != undefined) {
+            //Si la planète n'est pas neutre, on actualise le label avec le nombre d'habitants
+            if (this.p.player != 0) {
+                this.p.pop_label.p.label = this.p.population + "";
+            } else {
+                //Si la planète est neutre, on se contente d'un "?"
+                this.p.pop_label.p.label = "?";
+            }
+        }
+        //Si le conteneur du label est bien défini on met à jour sa position (si il aurait été bougé ailleurs par inadvertance)
+        if (this.p.pop_label_container != undefined) {
+            this.p.pop_label_container.p.x = this.p.x;
+            this.p.pop_label_container.p.y = this.p.y;
+            this.p.pop_label_container.fit();   
+        }
     },
+    //Appelée quand on bouge la souris avec une action de "drag" (clique sur le sprite, rester avec le bouton enfoncé et bouger la souris)
+    //le paramètre touch contient toutes les infos de l'évenement
     drag: function(touch) {
+        //récupération du stage
         let stage = Q.stage(0);
+        //Si on n'était pas déjà en train de drag, on démarre une nouvelle action de drag, et on affiche un vaisseau sous le curseur de la souris
         if (!this.p.dragging && this.p.population > 0 && this.p.player == 1 && this.p.my_turn) {
             this.p.dragging = true;
             this.p.spawned_ship = stage.insert(new Q.Ship({x:touch.x, y:touch.y}));
         } else {
+            //Si le vaisseau sous la souris est bien défini
             if (this.p.spawned_ship != undefined) {
+                //Recalcul de son angle par rapport à la planète de départ
                 this.p.spawned_ship.p.angle = Math.atan2(touch.x - touch.origX, - (touch.y - touch.origY) )*(180/Math.PI);
+                //Mise à jour de sa position par rapport à la position de la souris
                 this.p.spawned_ship.p.x = touch.x;
                 this.p.spawned_ship.p.y = touch.y;
-                //DETECTION PART
+                
+                //On garde dans une variable le "this"
                 let temp_vm = this;
+                //on parcourt les planètes, si il se trouve qu'on en survolle une, on change la couleur de fond de son label, donne du retour à l'utilisateur
                 stage.items.forEach(function(thing) {
                     if (thing.p.sheet == 'planets') {
                         if (((temp_vm.p.spawned_ship.p.x < (thing.p.x + 32)) && temp_vm.p.spawned_ship.p.x > (thing.p.x - 32)) 
                             && ((temp_vm.p.spawned_ship.p.y < (thing.p.y + 32)) && temp_vm.p.spawned_ship.p.y > (thing.p.y - 32))) {
-                            //WE'RE ABOVE A PLANET
+                            //ON SURVOLLE UNE PLANETE
                             
                             if (thing != temp_vm) {
-                               //IT'S NOT THE SAME PLANET AS THE START PLANET
+                               //CETTE PLANET EST DIFFERENTE DE CELLE DE DEPART
                                 thing.p.pop_label_container.p.fill = "white";
                             }
                             
                         } else {
+                            //ON NE SURVOLLE PAS CETTE PLANETE ON REMET UN FOND NORMAL SI IL ETAIT CHANGE
                             thing.p.pop_label_container.p.fill = "#424242";
                         }
                     }
@@ -61,17 +91,24 @@ Q.Sprite.extend('Planet', {
             }
         }
     },
+    //Appelée à la fin d'un évenement de drag.
     touchEnd: function(touch) {
+        //Fin du drag
         this.p.dragging = false;
+        //récuperation du stage
         let stage = Q.stage(0);
+        //Le vaisseau existe bien
         if (this.p.spawned_ship != undefined) {
+            //stockage du this
             let temp_vm = this;
+            //On parcourt les planètes
             stage.items.forEach(function(thing) {
                 if (thing.p.sheet == 'planets') {
+                    //c'est une planète
                     if (thing.p.pop_label_container.p.fill == "white") {
-                        //SELECTED PLANET
+                        //Bingo, elle est sélectionnée (vaisseau au dessus)
                         thing.p.pop_label_container.p.fill = "#424242";
-                        //SHOW POPUP FOR ATTACK AND STORE EVERY DATA NEEDED TO EVENTUALLY RESOLVE ATTACK
+                        //On calcule les données pour un éventuel transfert de population
                         let distance = (Math.abs(thing.p.x - temp_vm.p.x) + Math.abs(thing.p.y - temp_vm.p.y));
                         stage.current_attack = {
                             from : temp_vm,
@@ -79,6 +116,7 @@ Q.Sprite.extend('Planet', {
                             distance : distance,
                             duration : Math.ceil( distance / temp_vm.p.spawned_ship.p.speed)
                         };
+                        //On affiche et configure le popup de transfert de population
                         document.getElementById("full_background_atk").classList.remove("hide");
                         document.getElementById("attack_form").classList.remove("hide");
                         document.getElementById("attack_menu").classList.remove("hide");
@@ -91,17 +129,30 @@ Q.Sprite.extend('Planet', {
                         document.getElementById("attack_pop").max = temp_vm.p.population;
                         document.getElementById("arrival").value = stage.current_attack.duration + " tours";
                     } else {
-                        //NOTHING, NO PLANET SELECTED
+                        //cette planète n'est pas sélectionnée, on ne fait rien
                     }
                 }
             });
+            //Une fois qu'on a vérifié si il y avait une planète sélectionnée (si oui, on a déjà affiché le popup), on supprime le vaisseau sous le curseur
             this.p.spawned_ship.destroy();
         }
     }
 });
 
+
+
+
+
+
+
+
+
+
+//Seconde classe, celle des vaisseaux
 Q.Sprite.extend('Ship', {
+    //Constructeur
     init: function (p) {
+        //Initialisation des attributs par défaut
         this._super(p, {
             sheet: 'spaceship',
             frame: 0,
@@ -115,59 +166,109 @@ Q.Sprite.extend('Ship', {
             remain_turns:10,
             pop_label:undefined,
             pop_label_container:undefined,
-            destination_planet:undefined
+            destination_planet:undefined,
+            moving: false,
+            moves: 0,
+            total:0
         });
-
+        //Activation du module 2D
         this.add('2d');
     },
+    //Appelée à chaque frame
     step: function (dt) {
+        //Si le label est bien défini, on met à jour sa position
         if (this.p.pop_label_container != undefined) {
             this.p.pop_label_container.p.x = this.p.x;
             this.p.pop_label_container.p.y = this.p.y - 20;
             this.p.pop_label_container.fit();
         }
+        //Si le tour est activé et qu'il nous reste des déplacements, on joue une action (on se déplace)
         if (this.p.my_turn && this.p.remain_turns > 0) {
-            dir = [
-                this.p.dest_pos[0] - this.p.x,
-                this.p.dest_pos[1] - this.p.y
-            ];
-            hyp = Math.sqrt(dir[0] * dir[0] + dir[1] * dir[1]);
-            dir[0] = dir[0] / hyp;
-            dir[1] = dir[1] / hyp;
-            this.p.x += dir[0] * this.p.speed;
-            this.p.Y += dir[1] * this.p.speed;
-            this.p.my_turn = false;
-            this.p.remain_turns -= 1;
-            if (this.p.remain_turns == 0) {
-                console.log("finished_turns");
-                if (this.p.destination_planet != undefined) {
-                    //NEED TO BETTER HANDLE BATTLE RESOLUTION, REFERENCES ARE NOT EXACTLY KEPT, SO POPULATION CHANGES ARE NOT REPERCUTED. REWORK IS NEEDED
-                    if (this.p.destination_planet.p.player == this.p.player) {
-                        this.p.destination_planet.p.population += this.p.population;
-                        console.log("allied planet reached, population transfered");
+            //Si on est pas déjà en train de bouger
+            if (!this.p.moving) {
+                this.p.moving = true;
+                this.p.moves = 90;
+                this.p.total = 0;
+            } else {
+                //Sinon, si il reste du déplacement à faire ce tour
+                if (this.p.moves > 0) {
+                    // On doit limiter la distance parcoure, a tendance à faire des excès imprévus
+                    if (this.p.total < this.p.speed) {
+                        //Calcul du déplacement, et déplacement
+                        dir = [
+                            this.p.dest_pos[0] - this.p.x,
+                            this.p.dest_pos[1] - this.p.y
+                        ];
+                        hyp = Math.sqrt(dir[0] * dir[0] + dir[1] * dir[1]);
+                        dir[0] = dir[0] / hyp;
+                        dir[1] = dir[1] / hyp;
+                        
+                        this.p.x += dir[0] * (this.p.speed / 90);
+                        this.p.y += dir[1] * (this.p.speed / 90);
+
+                        this.p.total += Math.abs(dir[0] * (this.p.speed / 90));
+                        this.p.total += Math.abs(dir[1] * (this.p.speed / 90));
+                        
+                        this.p.moves--;
                     } else {
-                        if (this.p.population > this.p.destination_planet.p.population) {
-                            this.p.destination_planet.p.population = this.p.population - this.p.destination_planet.p.population;
-                            this.p.destination_planet.p.player = this.p.player;
-                            this.p.destination_planet.pop_label.p.color = this.p.pop_label.p.color;
-                            //Need to verify if planet was neutral, then create labels etc... need to think about what might need to be implemented for this !
-                            console.log("ennemy planet reached, won battle");
-                        } else {
-                            if (this.p.population == this.p.destination_planet.p.population) {
-                                console.log("no winner, planet becomes neutral");
+                        this.p.moves = 0;
+                    }
+                } else {
+                    //Sinon, résolution du tour
+                    this.p.moving = false;
+                    
+                    //Ce n'est plus notre tour, on change le booléen
+                    this.p.my_turn = false;
+                    
+                    //On diminue le nombre d'actions possible, on vient d'en consommer une
+                    this.p.remain_turns -= 1;
+                    //Si il ne reste plus d'actions (== on est arrivé à destination !)
+                    if (this.p.remain_turns == 0) {
+                        console.log("finished_turns");
+                        //Si la planète de destination est bien définie
+                        if (this.p.destination_planet != undefined) {
+                            console.log("resolved destination");
+                            //Stockage de la destination dans une variable, plus court à appeler
+                            let dest_plan = this.p.destination_planet;
+                            //si c'est une planète alliée, on transfert simplement la population
+                            if (dest_plan.p.player == this.p.player) {
+                                dest_plan.p.population += this.p.population;
+                                console.log("allied planet reached, population transfered");
                             } else {
-                                console.log("lost battle");
+                                //C'est une planète ennemie, plus compliqué
+
+                                //On gagne, changement de propriétaire de la planète destination, calcul de population
+                                if (this.p.population > dest_plan.p.population) {
+                                    dest_plan.p.population = this.p.population - dest_plan.p.population;
+                                    dest_plan.p.player = this.p.player;
+                                    dest_plan.p.pop_label.p.color = this.p.pop_label.p.color;
+                                    console.log("ennemy/neutral planet reached, won battle");
+                                } else {
+                                    //Egalité, la planète devient neutre
+                                    if (this.p.population == this.p.destination_planet.p.population) {
+                                        console.log("no winner, planet becomes neutral");
+                                        dest_plan.p.player = 0;
+                                        dest_plan.p.population = 0;
+                                        dest_plan.p.pop_label.p.color = "white";
+                                        dest_plan.p.pop_label.p.label = "?";
+                                    } else {
+                                        //Combat perdu, on diminue la population de la planète attaquée
+                                        console.log("lost battle");
+                                        dest_plan.p.population -= this.p.population;
+                                    }
+                                }
                             }
                         }
+                        //Suppression du vaisseau et de ses labels
+                        if (this.p.pop_label != undefined) {
+                            this.p.pop_label.destroy();
+                        }
+                        if (this.p.pop_label_container != undefined) {
+                            this.p.pop_label_container.destroy();
+                        }
+                        this.destroy();
                     }
                 }
-                if (this.p.pop_label != undefined) {
-                    this.p.pop_label.destroy();
-                }
-                if (this.p.pop_label_container != undefined) {
-                    this.p.pop_label_container.destroy();
-                }
-                this.destroy();
             }
         }
     }
