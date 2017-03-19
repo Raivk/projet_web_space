@@ -69,11 +69,44 @@ $.getScript('./js/quintus_conf.js', function()
         }
         
         cancel_atk = function() {
+            document.getElementById("full_background_atk").classList.add("hide");
             document.getElementById("attack_menu").classList.add("hide");
+            document.getElementById("attack_form").classList.add("hide");
         }
         
         confirm_atk = function() {
+            document.getElementById("full_background_atk").classList.add("hide");
             document.getElementById("attack_menu").classList.add("hide");
+            document.getElementById("attack_form").classList.add("hide");
+            let stage = Q.stage(0);
+            let container = stage.insert(new Q.UI.Container({
+                                fill: "#424242",
+                                x: stage.current_attack.from.p.x,
+                                y: stage.current_attack.from.p.y
+                            }));
+            let ship = stage.insert(new Q.Ship({
+                x: stage.current_attack.from.p.x,
+                y: stage.current_attack.from.p.y,
+                angle: Math.atan2(stage.current_attack.to.p.x - stage.current_attack.from.p.x, - (stage.current_attack.to.p.y - stage.current_attack.from.p.y) )*(180/Math.PI),
+                population: parseInt(document.getElementById("attack_pop").value),
+                player: stage.current_attack.from.p.player,
+                speed: stage.current_attack.distance / stage.current_attack.duration,
+                dest_pos: [stage.current_attack.to.p.x,
+                           stage.current_attack.to.p.y],
+                remain_turns: stage.current_attack.duration,
+                pop_label_container: container,
+                pop_label: stage.insert(new Q.UI.Text({
+                                            label: parseInt(document.getElementById("attack_pop").value) + "",
+                                            color: player_colors[0],
+                                            align: 'center',
+                                            size: 18,
+                                            x:0,
+                                            y:0
+                                        }), container)
+
+            }));
+            stage.current_attack.from.p.population -= ship.p.population;
+            //?   
         }
         //END UTILITY FUNCTIONS
         

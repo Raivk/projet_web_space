@@ -1,15 +1,73 @@
+@font-face {
+    font-family: "slabo";
+    src: url("fonts/Slabo_27px/Slabo27px-Regular.ttf");
+}
+
+@font-face {
+    font-family: "roboto";
+    src: url("fonts/Roboto/Roboto-Regular.ttf");
+}
+
+@font-face {
+    font-family: "robotothin";
+    src: url("fonts/Roboto/Roboto-Thin.ttf");
+}
+
 .hide {
     display: none;
 }
 
+#full_background_atk {
+    background-color: #424242;
+    opacity: 0.9;
+    z-index: 98;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
 #attack_menu {
-    background-color: dodgerblue;
-    z-index: 10;
-    position: fixed;
-    width: 500px;
-    height: 350px;
-    top: 50%;
-    left: 50%;
-    margin-top: -175px;
-    margin-left: -250px;
+    position: absolute;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    width:100%;
+    height:100%;
+}
+
+#attack_form {
+    padding-left:50px;
+    padding-right:50px;
+    text-align: center;
+    font-family: "robotothin" !important;
+    background-color:floralwhite;
+    z-index: 99;
+    opacity: 1 !important;
+}
+
+.attack_inputs {
+    text-align: center;
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+.button-success {
+    background: rgb(28, 184, 65); /* this is a green */
+}
+
+.button-error {
+    background: rgb(202, 60, 60); /* this is a maroon */
+}
+
+.big_text {
+    font-size: 200%;
+}
+
+.medium_text {
+    font-size: 150%;
+}
+
+.slight_margins_vert {
+    margin-top: 25px;
+    margin-bottom: 25px;
 }
