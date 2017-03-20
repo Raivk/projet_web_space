@@ -20,8 +20,8 @@ $.getScript('./js/quintus_conf.js', function()
         //VARIABLES POUR LE JEU -------------------------------------
         var min_dist_planets = 100;
         var planet_size = 64;
-        var min_dist_from_borders = 64;
-        var max_tries_place_planets = 40;
+        var min_dist_from_borders = 80;
+        var max_tries_place_planets = 10000;
         var space_ship_size = 16;
         
         var player_colors = [
@@ -30,6 +30,79 @@ $.getScript('./js/quintus_conf.js', function()
             "#f7a23b",
             "#be3bf7"
         ];
+        
+        //Fond d'écran aléatoire, fichiers
+        var backgrounds = [
+            './images/backgrounds/cartographer.png',
+            './images/backgrounds/congruent_outline.png',
+            './images/backgrounds/dark-wood.jpg',
+            './images/backgrounds/ep_naturalblack.png',
+            './images/backgrounds/escheresque_ste.png',
+            './images/backgrounds/footer_lodyas.png',
+            './images/backgrounds/geometry.png',
+            './images/backgrounds/grey_wash_wall.png',
+            './images/backgrounds/sayagata-400px.png',
+            './images/backgrounds/stardust.png',
+            './images/backgrounds/use_your_illusion.png',
+            './images/backgrounds/zwartevilt.png'
+        ];
+        
+        //préfixes pour les noms de planètes aléatoires
+        var prefixes = [
+            "Gor",
+            "Pul",
+            "Mo-",
+            "AB.",
+            "Obé",
+            "Rmu",
+            "Iao",
+            "Ity",
+            "Jjy",
+            "Eki",
+            "Kro",
+            "X-2",
+            "A-4",
+            "Yo-"
+        ];
+        
+        //facteurs pour les noms de planètes aléatoires
+        var factors = [
+            "orb",
+            "iaz",
+            "-U-",
+            ".2.",
+            "éué",
+            "dza",
+            "pas",
+            "eij",
+            "fek",
+            "wos",
+            "xum",
+            "5-S",
+            "D-4",
+            "OX7"
+        ];
+        
+        //suffixes pour les noms de planètes aléatoires
+        var suffixes = [
+            "tol",
+            "oxi",
+            "-B7",
+            "888",
+            "aié",
+            "oel",
+            "ske",
+            "ask",
+            "bso",
+            "zox",
+            "mqe",
+            "-25",
+            "-2D",
+            "B29"
+        ];
+        
+        $('body').css('background-image', 'url(' + backgrounds[randomIntFromInterval(0,backgrounds.length - 1)] + ')');
+        $('body').css('background-repeat', 'repeat');
         //END VARIABLES POUR LE JEU -------------------------------------
         
         //FONCTIONS UTILITAIRES -------------------------------------
@@ -78,7 +151,8 @@ $.getScript('./js/quintus_conf.js', function()
         
         //END FONCTIONS UTILITAIRES -------------------------------------
         
-        //Redéfinitions des méthodes pour les boutons
+        
+        //Redéfinitions des méthodes pour les boutons ---------------------------------------------------------------------------------- 
         cancel_atk = function() {
             //Transfert annulé, on cache juste les menus, on a rien d'autre à faire
             document.getElementById("full_background_atk").classList.add("hide");
@@ -101,11 +175,19 @@ $.getScript('./js/quintus_conf.js', function()
                                 x: stage.current_attack.from.p.x,
                                 y: stage.current_attack.from.p.y
                             }));
+            
+            //Verification : on est pas censé pouvoir aller au delà de la population max de la planète dans le champs de saisie
+            //Mais, c'est faisable en entrant les chiffres directement. (Testé sous le navigateur Opera Neon)
+            let pop_to_send = parseInt(document.getElementById("attack_pop").value);
+            if (pop_to_send > stage.current_attack.from.p.population) {
+                pop_to_send = stage.current_attack.from.p.population;
+            }
+            //Construction du vaisseau, et insertion dans le stage
             let ship = stage.insert(new Q.Ship({
                 x: stage.current_attack.from.p.x,
                 y: stage.current_attack.from.p.y,
                 angle: Math.atan2(stage.current_attack.to.p.x - stage.current_attack.from.p.x, - (stage.current_attack.to.p.y - stage.current_attack.from.p.y) )*(180/Math.PI),
-                population: parseInt(document.getElementById("attack_pop").value),
+                population: pop_to_send,
                 player: stage.current_attack.from.p.player,
                 speed: (stage.current_attack.distance / stage.current_attack.duration),
                 dest_pos: [stage.current_attack.to.p.x,
@@ -113,7 +195,7 @@ $.getScript('./js/quintus_conf.js', function()
                 remain_turns: stage.current_attack.duration,
                 pop_label_container: container,
                 pop_label: stage.insert(new Q.UI.Text({
-                                            label: parseInt(document.getElementById("attack_pop").value) + "",
+                                            label: pop_to_send + "",
                                             color: player_colors[0],
                                             align: 'center',
                                             size: 18,
@@ -134,8 +216,12 @@ $.getScript('./js/quintus_conf.js', function()
                 stage.current_attack.from.p.pop_label.p.label = "?";
             }  
         }
+        //Fin de redéfinition des méthodes pour les boutons ----------------------------------------------------------------------------------
         
-        //Mise en place de la scène
+        
+        
+        
+        //Mise en place de la scène ----------------------------------------------------------------------------------
         function setUp (stage) {
             //SETUP THE SCENE STAGE
             
@@ -149,7 +235,15 @@ $.getScript('./js/quintus_conf.js', function()
             //On place les planètes, toutes neutres
             for (var i = 0; i < nb_planets; i++) {
                 let pos = calculate_new_planet_pos(planets);
-                let planet = stage.insert(new Q.Planet({x:pos[0], y:pos[1], population:pop_begin, player:0, population:Math.floor(Math.random() * 50)}));
+                let planet = stage.insert(new Q.Planet({x:pos[0],
+                                                        y:pos[1],
+                                                        population:pop_begin,
+                                                        player:0,
+                                                        population:Math.floor(Math.random() * 50),
+                                                        name: prefixes[randomIntFromInterval(0,prefixes.length - 1)]
+                                                            + factors[randomIntFromInterval(0,factors.length - 1)]
+                                                            + suffixes[randomIntFromInterval(0,suffixes.length - 1)]
+                                                       }));
                 planet.p.pop_label_container = stage.insert(new Q.UI.Container({
                     fill: "#424242",
                     x: planet.p.x,
@@ -183,9 +277,23 @@ $.getScript('./js/quintus_conf.js', function()
                 selected.push(rand);
             }
             
+            //Mise en place de l'HUD
+            let hud = document.getElementById("HUD");
+            for (var i = 0; i < nb_players; i++) {
+                let play_hud = document.createElement("div");
+                play_hud.setAttribute("id", "player_" + (i + 1));
+                play_hud.innerHTML = "Joueur " + (i + 1);
+                play_hud.classList.add("players_hud");
+                if (i == 0) {
+                    play_hud.classList.add("hud_my_turn");
+                }
+                hud.appendChild(play_hud);
+            }
+            
             stage.add('viewport');
 
         }
+        //Fin de la ise en place de la scène ----------------------------------------------------------------------------------
 
         //Préparation de la scène, on apppelle la fonction setUp vue au dessus
         Q.scene('space', function (stage) {
@@ -195,14 +303,14 @@ $.getScript('./js/quintus_conf.js', function()
         //Assets
         var files = [
             'planet_1.png',
-            'spaceship.png'
+            'spaceships.png'
         ]
         
         //Chargement des assets
         Q.load(files.join(','), function() {
             // Sprites sheets can be created manually
             Q.sheet("planets","planet_1.png", { tilew: planet_size, tileh: planet_size });
-            Q.sheet("spaceship","spaceship.png", { tilew: space_ship_size, tileh: space_ship_size});
+            Q.sheet("spaceship","spaceships.png", { tilew: space_ship_size, tileh: space_ship_size});
             // Finally, call stageScene to run the game
             Q.stageScene("space");
         });

@@ -123,7 +123,13 @@ Q.Sprite.extend('Planet', {
                         document.getElementById("attack_start").value = temp_vm.p.name;
                         document.getElementById("attack_target").value = thing.p.name;
                         document.getElementById("attack_start_pop_max").value = temp_vm.p.population;
-                        document.getElementById("attack_target_pop").value = thing.p.population;
+                        if (thing.p.player == 0) {
+                            //Target planet is neutral, hide its population
+                            document.getElementById("attack_target_pop").value = "?";
+                        } else {
+                            //Target planet isn't neutral, show its population
+                            document.getElementById("attack_target_pop").value = thing.p.population;
+                        }
                         document.getElementById("attack_pop").value = 1;
                         document.getElementById("attack_pop").min = 1;
                         document.getElementById("attack_pop").max = temp_vm.p.population;
@@ -182,6 +188,18 @@ Q.Sprite.extend('Ship', {
             this.p.pop_label_container.p.y = this.p.y - 20;
             this.p.pop_label_container.fit();
         }
+        //Changement de la couleur du vaisseau suivant le joueur le contrôlant
+        if (this.p.frame != this.p.player) {
+            this.p.frame = this.p.player;
+        }
+        
+        //Si le vaisseau est à l'adversaire, on cache sa population
+        if (this.p.player != 1) {
+            if (this.p.pop_label != undefined) {
+                this.p.pop_label.p.label = "?";    
+            }
+        }
+        
         //Si le tour est activé et qu'il nous reste des déplacements, on joue une action (on se déplace)
         if (this.p.my_turn && this.p.remain_turns > 0) {
             //Si on est pas déjà en train de bouger

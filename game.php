@@ -8,6 +8,9 @@
         <script src="lib/jquery-3.1.1.min.js"></script>
     </head>
     <body>
+        <div id="HUD">
+            
+        </div>
         <div id="full_background_atk" class="none hide"></div>
         <div id="attack_menu" class="none hide">
             <div id="attack_form" class="pure-form pure-form-stacked hide">

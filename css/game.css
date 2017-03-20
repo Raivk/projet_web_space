@@ -39,7 +39,7 @@
     padding-left:50px;
     padding-right:50px;
     text-align: center;
-    font-family: "robotothin" !important;
+    font-family: "roboto" !important;
     background-color:floralwhite;
     z-index: 99;
     opacity: 1 !important;
@@ -70,4 +70,40 @@
 .slight_margins_vert {
     margin-top: 25px;
     margin-bottom: 25px;
+}
+
+#HUD {
+    position: absolute;
+    top:0px;
+    text-align: center;
+    width: 100%;
+    z-index: 97;
+}
+
+.players_hud {
+    font-family: "robotothin";
+    font-size: 200%;
+    display: inline-block;
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+.hud_my_turn {
+    border-bottom: solid 4px dimgray;
+}
+
+#player_1 {
+    background-color:#3bc4f7;
+}
+
+#player_2 {
+    background-color:#6af73b;
+}
+
+#player_3 {
+    background-color:#f7a23b;
+}
+
+#player_4 {
+    background-color:#be3bf7;
 }
