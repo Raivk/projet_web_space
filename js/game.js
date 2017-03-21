@@ -182,6 +182,9 @@ $.getScript('./js/quintus_conf.js', function()
             if (pop_to_send > stage.current_attack.from.p.population) {
                 pop_to_send = stage.current_attack.from.p.population;
             }
+            if (pop_to_send == undefined || pop_to_send == 0) {
+                pop_to_send = 1;
+            }
             //Construction du vaisseau, et insertion dans le stage
             let ship = stage.insert(new Q.Ship({
                 x: stage.current_attack.from.p.x,
@@ -189,9 +192,12 @@ $.getScript('./js/quintus_conf.js', function()
                 angle: Math.atan2(stage.current_attack.to.p.x - stage.current_attack.from.p.x, - (stage.current_attack.to.p.y - stage.current_attack.from.p.y) )*(180/Math.PI),
                 population: pop_to_send,
                 player: stage.current_attack.from.p.player,
+                stroke_color: player_colors[stage.current_attack.from.p.player - 1],
                 speed: (stage.current_attack.distance / stage.current_attack.duration),
                 dest_pos: [stage.current_attack.to.p.x,
                            stage.current_attack.to.p.y],
+                orig_pos: [stage.current_attack.from.p.x,
+                          stage.current_attack.from.p.y],
                 remain_turns: stage.current_attack.duration,
                 pop_label_container: container,
                 pop_label: stage.insert(new Q.UI.Text({
@@ -237,7 +243,6 @@ $.getScript('./js/quintus_conf.js', function()
                 let pos = calculate_new_planet_pos(planets);
                 let planet = stage.insert(new Q.Planet({x:pos[0],
                                                         y:pos[1],
-                                                        population:pop_begin,
                                                         player:0,
                                                         population:Math.floor(Math.random() * 50),
                                                         name: prefixes[randomIntFromInterval(0,prefixes.length - 1)]
@@ -274,6 +279,7 @@ $.getScript('./js/quintus_conf.js', function()
                 planets[rand].p.growth = 5;
                 planets[rand].p.pop_label.p.color = player_colors[i];
                 planets[rand].p.pop_label.p.label = planets[rand].p.population + "";
+                planets[rand].p.pl_color = player_colors[i];
                 selected.push(rand);
             }
             

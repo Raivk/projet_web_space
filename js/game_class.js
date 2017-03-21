@@ -10,6 +10,7 @@ Q.Sprite.extend('Planet', {
             frame: Math.floor((Math.random() * 10)),
             population:0,
             player:0,
+            pl_color:"#ffffff",
             pop_label:undefined,
             pop_label_container:undefined,
             dragging:false,
@@ -17,22 +18,27 @@ Q.Sprite.extend('Planet', {
             collisionLayer:Q.SPRITE_ENEMY,
             collisionMask:Q.SPRITE_ENEMY,
             my_turn:true,
-            growth:Math.floor((Math.random() * 10) + 1)
+            growth:Math.floor((Math.random() * 10) + 1),
+            inc_pop:function() {
+                //incrémente la population si cette planète n'est pas neutre
+                if (this.player != 0) {
+                    this.population += this.growth;
+                }
+            }
         });
         //Activation des évenements de drag, fin de drag, et activation du module 2D
         this.on("drag");
         this.on("touchEnd");
         this.add('2d');
     },
-    //Fonction à appeler pour incrémenter la population suivant la croissance de la planète. NE FAIT RIEN SI LA PLANETE EST NEUTRE (player mit à 0)
-    inc_pop: function() {
-        if (this.p.player != 0) {
-            this.p.population += this.p.growth;
-        }
-    },
     //Fonction appelée à chaque frame, donc si le jeu tourne à 30 images par seconde, elle sera appelée 30 fois par seconde.
     //Elle est appelée avant le dessin de l'image
     step: function (dt) {
+        
+        if (this.p.my_turn) {
+            this.p.angle = (this.p.angle + 15 * dt) % 360;
+        }
+        
         //Si le label est bien défini
         if (this.p.pop_label != undefined) {
             //Si la planète n'est pas neutre, on actualise le label avec le nombre d'habitants
@@ -58,7 +64,7 @@ Q.Sprite.extend('Planet', {
         //Si on n'était pas déjà en train de drag, on démarre une nouvelle action de drag, et on affiche un vaisseau sous le curseur de la souris
         if (!this.p.dragging && this.p.population > 0 && this.p.player == 1 && this.p.my_turn) {
             this.p.dragging = true;
-            this.p.spawned_ship = stage.insert(new Q.Ship({x:touch.x, y:touch.y}));
+            this.p.spawned_ship = stage.insert(new Q.Ship({x:touch.x, y:touch.y,orig_pos:[this.p.x,this.p.y],stroke_color:this.p.pl_color}));
         } else {
             //Si le vaisseau sous la souris est bien défini
             if (this.p.spawned_ship != undefined) {
@@ -164,8 +170,10 @@ Q.Sprite.extend('Ship', {
             frame: 0,
             population:0,
             player:0,
+            stroke_color:"#ffffff",
             speed:250,
             dest_pos:[0,0],
+            orig_pos:[0,0],
             my_turn:false,
             collisionLayer:Q.SPRITE_NONE,
             collisionMask:Q.SPRITE_NONE,
@@ -179,6 +187,27 @@ Q.Sprite.extend('Ship', {
         });
         //Activation du module 2D
         this.add('2d');
+    },
+    draw: function(ctx) {
+        //Déssine une ligne de l'origine jusque la destination
+        ctx.beginPath();
+        if (this.p.destination_planet == undefined) {
+            this.p.dest_pos = [this.p.x, this.p.y];
+        }
+        ctx.moveTo(0, - 8 + Math.sqrt(((this.p.orig_pos[0] - this.p.x) * (this.p.orig_pos[0] - this.p.x)) + ((this.p.orig_pos[1] - this.p.y) * (this.p.orig_pos[1] - this.p.y))));
+        ctx.lineTo(0, 10 + (- Math.sqrt(((this.p.dest_pos[0] - this.p.x) * (this.p.dest_pos[0] - this.p.x)) + ((this.p.dest_pos[1] - this.p.y) * (this.p.dest_pos[1] - this.p.y)))));
+        ctx.strokeStyle = this.p.stroke_color;
+        ctx.lineWidth = 4;
+        ctx.stroke();
+        //Déssine le vaisseau
+        if (this.p.sheet) {
+            this.sheet().draw(ctx,-this.p.cx,-this.p.cy,this.p.frame);
+        } else if(this.p.asset) {
+            ctx.drawImage(Q.asset(this.p.asset), -this.p.cx, -this.p.cy);
+        } else if(this.p.color) {
+            ctx.fillStyle = this.p.color;
+            ctx.fillRect(-this.p.cx, -this.p.cy, this.p.w, this.p.h);
+        }
     },
     //Appelée à chaque frame
     step: function (dt) {
