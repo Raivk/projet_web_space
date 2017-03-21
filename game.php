@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>LE JEU DE L'ESPACE INTERSTELLAIRE</title>
+        <meta charset="utf-8"/>
         <link tpye="text/css" rel="stylesheet" href="css/pure-min.css"/>
         <link type="text/css" rel="stylesheet" href="css/game.css"/>
         <script src="lib/quintus-all.js"></script>
