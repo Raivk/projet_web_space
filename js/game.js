@@ -11,6 +11,10 @@ var confirm_atk = function() {
     //NOTHING
 }
 
+var change_turn = function() {
+    //NOTHING
+}
+
 //Récupération préalable du code contenu dans le fichier pour la configuration de Quintus.js
 $.getScript('./js/quintus_conf.js', function()
 {
@@ -23,7 +27,11 @@ $.getScript('./js/quintus_conf.js', function()
         var min_dist_from_borders = 80;
         var max_tries_place_planets = 10000;
         var space_ship_size = 16;
+        var nb_players = 0;
+        var tour_actuel = 0;
+        var planets = [];
         
+        var players_left = [];
         var player_colors = [
             "#3bc4f7",
             "#6af73b",
@@ -222,6 +230,101 @@ $.getScript('./js/quintus_conf.js', function()
                 stage.current_attack.from.p.pop_label.p.label = "?";
             }  
         }
+        
+        function eliminerJoueur(i){
+            document.getElementById("player"+(i+1)).classList.add("joueur_mort");
+            players_left[i]=0;
+        }
+        
+        function jouerBot(liste_planets, othersPlan){
+            let actualPopMax = Math.max.apply(Math, liste_planets.map(function(element){
+                return element.p.population;
+            }));
+            
+            let planetPlaying = liste_planets.find(function(element){
+                return element.p.population == actualPopMax;
+            });
+            
+            console.log(planetPlaying);
+            
+            let planetAttacked = planets[randomIntFromInterval(0,planets.length-1)];
+            console.log(planetAttacked);
+            let distance = (Math.abs(planetAttacked.p.x - planetPlaying.p.x) + Math.abs(planetAttacked.p.y - planetPlaying.p.y));
+            
+            Q.stage(0).current_attack = {
+                from: planetPlaying,
+                to: planetAttacked,
+                distance: distance,
+                duration: Math.ceil(distance/250)
+            };
+            setTimeout(function(){
+                confirm_atk();
+                change_turn();
+            }, 5000);
+            
+            
+        }
+        
+        change_turn = function(){
+            console.log("pushed");
+            let stage = Q.stage(0);
+            let nb_plan_players = [];
+            tour_actuel = ((tour_actuel +1)%nb_players);
+            
+            for(i=0;i<nb_players;i++){
+                nb_plan_players.push(0);
+            }
+            
+            let list_plan_PlayerActuel = [];
+            
+            stage.items.forEach(function(item){
+                if(item.p.sheet == "planets" || item.p.sheet == "spaceship"){
+                    if(item.p.player != 0){
+                        nb_plan_players[item.p.player -1]++;
+                    }
+                    item.p.my_turn = false;
+                    if(item.p.player == tour_actuel+1){
+                        item.p.my_turn = true;
+                    }
+                    
+                    if(item.p.sheet == "planets" && item.p.player == tour_actuel+1){
+                        list_plan_PlayerActuel.push(item);
+                    }
+
+                }
+            });
+            
+            for(i=0;i<nb_plan_players.length;i++){
+                if(nb_plan_players[i]==0){
+                    if(players_left[i] != 0){
+                        eliminerJoueur(i);
+                    }
+                }
+            }
+            
+            
+            if(tour_actuel != 0){
+                document.getElementById("turn_bt").disabled = true;
+                jouerBot(list_plan_PlayerActuel);
+            }
+            else{
+                planets.forEach(function(element){
+                    element.p.inc_pop();
+                });
+                document.getElementById("turn_bt").disabled = false;
+            }
+        }
+        
+        function init_tour(){
+            tour_actuel = 0;
+            planets.forEach(function(plan){
+                if(plan.p.player == (tour_actuel +1)){
+                    plan.p.my_turn = true;
+                }
+            });
+        }
+        
+    
         //Fin de redéfinition des méthodes pour les boutons ----------------------------------------------------------------------------------
         
         
@@ -234,9 +337,11 @@ $.getScript('./js/quintus_conf.js', function()
             //Ici, on récupère les variables transmises par le serveur via PHP
             var nb_planets = parseInt(game_data.nb_planets);
             var pop_begin = parseInt(game_data.pop_begin);
-            var nb_players = parseInt(game_data.nb_ennemies) + 1;
+            nb_players = parseInt(game_data.nb_ennemies) + 1;
             
-            var planets = [];
+            for(i=0; i<=nb_players; i++){
+                players_left.push(1);
+            }
             
             //On place les planètes, toutes neutres
             for (var i = 0; i < nb_planets; i++) {
@@ -297,6 +402,8 @@ $.getScript('./js/quintus_conf.js', function()
             }
             
             stage.add('viewport');
+            init_tour();
+            
 
         }
         //Fin de la ise en place de la scène ----------------------------------------------------------------------------------

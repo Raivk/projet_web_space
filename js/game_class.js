@@ -17,7 +17,7 @@ Q.Sprite.extend('Planet', {
             spawned_ship:undefined,
             collisionLayer:Q.SPRITE_ENEMY,
             collisionMask:Q.SPRITE_ENEMY,
-            my_turn:true,
+            my_turn:false,
             growth:Math.floor((Math.random() * 10) + 1),
             inc_pop:function() {
                 //incrémente la population si cette planète n'est pas neutre
