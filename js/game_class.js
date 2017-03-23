@@ -288,8 +288,12 @@ Q.Sprite.extend('Ship', {
                                 if (this.p.population > dest_plan.p.population) {
                                     dest_plan.p.population = this.p.population - dest_plan.p.population;
                                     dest_plan.p.player = this.p.player;
-                                    dest_plan.p.pop_label.p.color = this.p.pop_label.p.color;
+                                    dest_plan.p.pl_color = this.p.stroke_color;
+                                    dest_plan.p.pop_label.p.color = this.p.stroke_color;
                                     console.log("ennemy/neutral planet reached, won battle");
+                                    if(Q.tour_actuel == (this.p.player - 1)){
+                                        dest_plan.p.my_turn = true;
+                                    }
                                 } else {
                                     //Egalité, la planète devient neutre
                                     if (this.p.population == this.p.destination_planet.p.population) {

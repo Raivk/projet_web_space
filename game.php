@@ -35,7 +35,7 @@
                 
                 <div class="pure-g pure-u-1 slight_margins_vert">
                     <button class="pure-button button-error pure-u-1-3" onclick="cancel_atk();">Annuler !</button>
-                    <button class="pure-button button-success pure-u-1-3" onclick="confirm_atk();">Décollage !</button>
+                    <button class="pure-button button-success pure-u-1-3" onclick="confirm_atk(undefined);">Décollage !</button>
                 </div>
             </div>
         </div>
