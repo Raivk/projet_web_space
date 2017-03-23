@@ -13,27 +13,13 @@
             <fieldset>
                 <legend class="legend">Configurez la partie</legend>
                 <label for="nb_planets" class="labels">Nombre de planètes</label>
-                <input id="nb_planets" class="pure-input-1" type="number" name="nb_planets"/>
+                <input id="nb_planets" class="pure-input-1" type="number" name="nb_planets" min="5" max="50" value="18"/>
                 
                 <label for="pop_begin" class="labels">Population de départ</label>
-                <input id="pop_begin" type="number" class="pure-input-1" name="pop_begin"/>
+                <input id="pop_begin" type="number" class="pure-input-1" name="pop_begin" min="1" max="2000" value="200"/>
                 
-                <label class="radios labels">Nombre d'ennemis</label>
-                
-                <label for="option-one" class="pure-radio labels">
-                    <input id="option-one" class="pure-input-1" type="radio" name="nb_ennemies" value="1" />
-                    1
-                </label>
-
-                <label for="option-two" class="pure-radio labels">
-                    <input id="option-two" class="pure-input-1" type="radio" name="nb_ennemies" value="2"/>
-                    2
-                </label>
-                
-                <label for="option-three" class="pure-radio labels">
-                    <input id="option-three" class="pure-input-1" type="radio" name="nb_ennemies" value="3"/>
-                    3
-                </label>
+                <label for="nb_play" class="labels">Nombre d'ennemis</label>
+                <input id="nb_play" class="pure-input-1" type="number" min="1" max="3" name="nb_ennemies" value="1"/>
                 <button type="submit" value="OK" class="pure-button pure-button-primary pure-input-1 big_bt">Démarrer</button>
             </fieldset>
         </form>

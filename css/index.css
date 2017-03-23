@@ -16,6 +16,7 @@
 .small_things{
     font-family: "robotothin";
     font-size: 70%;
+    color: cornflowerblue;
 }
 
 .center_me {
@@ -27,6 +28,7 @@
     font-family: "robotothin";
     font-size:400%;
     margin-top:50px;
+    color: dodgerblue;
 }
 
 .radios {
@@ -37,14 +39,27 @@
     font-size: 120%;
 }
 
+input {
+    color: black !important;
+    text-align: center;
+}
+
 .space_form {
     font-family: "roboto";
 }
 
 .legend {
     font-size: 150%;
+    color: white !important;
 }
 
 .big_bt {
+    margin-top: 25px;
     font-size: 140%;
+}
+
+html {
+    background-image: url("../images/backgrounds/footer_lodyas.png");
+    background-repeat: repeat;
+    color:white;
 }
