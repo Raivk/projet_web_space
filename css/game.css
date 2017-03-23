@@ -73,7 +73,7 @@
 }
 
 #HUD {
-    position: absolute;
+    position: fixed;
     top:0px;
     text-align: center;
     width: 100%;
@@ -106,4 +106,16 @@
 
 #player_4 {
     background-color:#be3bf7;
+}
+
+#turn_bt{
+    width: 100%;
+    position: fixed;
+    bottom: 0px;
+}
+
+.joueur_mort {
+    color: lightgrey !important;
+    font-style: italic !important;
+    background-color: darkgrey !important;
 }

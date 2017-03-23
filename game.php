@@ -10,7 +10,6 @@
     </head>
     <body>
         <div id="HUD">
-            
         </div>
         <div id="full_background_atk" class="none hide"></div>
         <div id="attack_menu" class="none hide">
@@ -40,6 +39,9 @@
                 </div>
             </div>
         </div>
+        
+        <button id="turn_bt" class="pure-button pure-button-primary" onclick="change_turn()">Terminer mon tour</button>
+        
         <!-- ONE LINER SCRIPT BELOW -->
         <script type='text/javascript'> var game_data = <?php echo !empty($_POST)?json_encode($_POST):'null';?>; </script>
 
