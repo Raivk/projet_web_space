@@ -258,7 +258,7 @@ $.getScript('./js/quintus_conf.js', function()
                 console.log("something went wrong, no planets to make an action. Passing onto the next player.");
                 setTimeout(function() {
                     change_turn();
-                }, 100);
+                }, 2500);
             } else {
                 let rand = randomIntFromInterval(0,planets.length-1);
                 let tries = 0;
@@ -278,7 +278,7 @@ $.getScript('./js/quintus_conf.js', function()
                     let to_send = randomIntFromInterval(1, Q.stage(0).current_attack.from.p.population);
                     confirm_atk(to_send);
                     change_turn();
-                }, 100);
+                }, 2500);
             }
         }
         
@@ -370,22 +370,6 @@ $.getScript('./js/quintus_conf.js', function()
                 
                 document.getElementById("player_" + (Q.tour_actuel + 1)).classList.add("hud_my_turn");
                 
-                let finished_moves = false;
-            
-                while(!finished_moves){
-                    finished_moves = true;
-                    console.log("deb boucle");
-                    stage.items.forEach(function(element){
-                        if(element.p.sheet == "spaceship"){
-                            if(element.p.moving == true){
-                                console.log("vaisseau bouge");
-                                finished_moves = false;
-                            }
-                        }
-                    });
-                }
-                console.log("sortie boucle");
-            
                 if(Q.tour_actuel != 0){
                     
                     document.getElementById("turn_bt").disabled = true;
