@@ -279,17 +279,24 @@ $.getScript('./js/quintus_conf.js', function()
             }
         }
         
+        function findepartie(isPlayer){
+            if(isPlayer){
+                alert("le joueur n° a gagné !");
+            }
+            else{
+                alert("le bot n°"+(Q.tour_actuel+1)+" a gagné ! Vous avez perdu.. ");
+            }
+        }
+        
         change_turn = function(){
             
-            document.getElementById("player_" + (Q.tour_actuel + 1)).classList.remove("hud_my_turn");
-            
-            let stage = Q.stage(0);
             let nb_plan_players = [];
+            let nbPlayersLeft = 0;
+            let stage = Q.stage(0);
+            document.getElementById("player_" + (Q.tour_actuel + 1)).classList.remove("hud_my_turn");
             Q.tour_actuel = ((Q.tour_actuel +1)%nb_players);
             
-            document.getElementById("player_" + (Q.tour_actuel + 1)).classList.add("hud_my_turn");
-            
-            for(i=0;i<nb_players;i++){
+            for(i = 0; i<nb_players; i++){
                 nb_plan_players.push(0);
             }
             
@@ -298,31 +305,57 @@ $.getScript('./js/quintus_conf.js', function()
                     if(item.p.player != 0){
                         nb_plan_players[item.p.player -1]++;
                     }
-                    item.p.my_turn = false;
-                    if(item.p.player == Q.tour_actuel+1){
-                        item.p.my_turn = true;
-                    }
+                }
+            });
+
+            for(i = 0; i<nb_players; i++){
+                if(nb_plan_players[i] == 0 && players_left[i] != 0){
+                    eliminerJoueur(i);
+                }
+            }
+            
+            players_left.forEach(function(element){
+                if(element == 1){
+                    nbPlayersLeft++;
                 }
             });
             
-            for(i=0;i<nb_plan_players.length;i++){
-                if(nb_plan_players[i]==0){
-                    if(players_left[i] != 0){
-                        eliminerJoueur(i);
-                    }
-                }
+            if(players_left[0] == 0){
+                findepartie(false);
             }
-            
-            
-            if(Q.tour_actuel != 0){
-                document.getElementById("turn_bt").disabled = true;
-                jouerBot();
+            else if(players_left[0] == 1 && nbPlayersLeft == 1){
+                findepartie(true);
             }
             else{
-                planets.forEach(function(element){
-                    element.p.inc_pop();
+                
+                while(players_left[Q.tour_actuel]!=1){
+                    Q.tour_actuel = ((Q.tour_actuel +1)%nb_players);
+                }
+                
+                stage.items.forEach(function(item){
+                    if(item.p.sheet == "planets" || item.p.sheet == "spaceship"){
+                        if(item.p.player == Q.tour_actuel + 1){
+                            item.p.my_turn = true;
+                        }
+                        else{
+                            item.p.my_turn = false;
+                        }
+                    }
                 });
-                document.getElementById("turn_bt").disabled = false;
+                
+                
+                document.getElementById("player_" + (Q.tour_actuel + 1)).classList.add("hud_my_turn");        
+            
+                if(Q.tour_actuel != 0){
+                    document.getElementById("turn_bt").disabled = true;
+                    jouerBot();
+                }
+                else{
+                    planets.forEach(function(element){
+                        element.p.inc_pop();
+                    });
+                    document.getElementById("turn_bt").disabled = false;
+                }
             }
         }
         
@@ -350,7 +383,7 @@ $.getScript('./js/quintus_conf.js', function()
             var pop_begin = parseInt(game_data.pop_begin);
             nb_players = parseInt(game_data.nb_ennemies) + 1;
             
-            for(i=0; i<=nb_players; i++){
+            for(i=0; i<nb_players; i++){
                 players_left.push(1);
             }
             
