@@ -280,12 +280,14 @@ Q.Sprite.extend('Ship', {
                             //si c'est une planète alliée, on transfert simplement la population
                             if (dest_plan.p.player == this.p.player) {
                                 dest_plan.p.population += this.p.population;
+                                toastr.info("Transfert terminé de "+ this.p.population +" personnes pour le joueur " + this.p.player + " vers " + dest_plan.p.name + ".");
                                 console.log("allied planet reached, population transfered");
                             } else {
                                 //C'est une planète ennemie, plus compliqué
 
                                 //On gagne, changement de propriétaire de la planète destination, calcul de population
                                 if (this.p.population > dest_plan.p.population) {
+                                    toastr.success("La planète " + dest_plan.p.name + ((dest_plan.p.player == 0) ? (" d'allégeance neutre") : (" possédée par le joueur " + dest_plan.p.player)) + " a été conquise par le joueur " + this.p.player + ".");
                                     dest_plan.p.population = this.p.population - dest_plan.p.population;
                                     dest_plan.p.player = this.p.player;
                                     dest_plan.p.pl_color = this.p.stroke_color;
@@ -298,6 +300,7 @@ Q.Sprite.extend('Ship', {
                                     //Egalité, la planète devient neutre
                                     if (this.p.population == this.p.destination_planet.p.population) {
                                         console.log("no winner, planet becomes neutral");
+                                        toastr.warning("La planète " + dest_plan.p.name + ((dest_plan.p.player == 0) ? (" d'allégeance neutre") : (" possédée par le joueur " + dest_plan.p.player)) + " a subit une attaque dont aucun n'est ressorti vivant.");
                                         dest_plan.p.player = 0;
                                         dest_plan.p.population = 0;
                                         dest_plan.p.pop_label.p.color = "white";
@@ -305,6 +308,7 @@ Q.Sprite.extend('Ship', {
                                     } else {
                                         //Combat perdu, on diminue la population de la planète attaquée
                                         console.log("lost battle");
+                                        toastr.error("La planète " + dest_plan.p.name + ((dest_plan.p.player == 0) ? (" d'allégeance neutre") : (" possédée par le joueur " + dest_plan.p.player)) + " s'est bien défendue face aux attaquants du joueur " + this.p.player + ".");
                                         dest_plan.p.population -= this.p.population;
                                     }
                                 }

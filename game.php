@@ -5,8 +5,10 @@
         <meta charset="utf-8"/>
         <link tpye="text/css" rel="stylesheet" href="css/pure-min.css"/>
         <link type="text/css" rel="stylesheet" href="css/game.css"/>
+        <link type="text/css" rel="stylesheet" href="css/toastr.min.css"/>
         <script src="lib/quintus-all.js"></script>
         <script src="lib/jquery-3.1.1.min.js"></script>
+        <script src="lib/toastr.min.js"></script>
     </head>
     <body>
         <div id="HUD">

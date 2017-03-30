@@ -26,3 +26,21 @@ Q.gravityY = 0;
 
 //Activation de contrôles tactiles (sert en particulier pour activer le "drag" sur la souris) sur toutes les classes dérivant sprite
 Q.touch(Q.SPRITE_ALL);
+
+toastr.options = {
+  "closeButton": false,
+  "debug": false,
+  "newestOnTop": false,
+  "progressBar": true,
+  "positionClass": "toast-top-full-width",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": "300",
+  "hideDuration": "1000",
+  "timeOut": "5000",
+  "extendedTimeOut": "1000",
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+};

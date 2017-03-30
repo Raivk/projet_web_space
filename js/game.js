@@ -255,7 +255,7 @@ $.getScript('./js/quintus_conf.js', function()
                 console.log("something went wrong, no planets to make an action. Passing onto the next player.");
                 setTimeout(function() {
                     change_turn();
-                }, 2500);
+                }, 1000);
             } else {
                 let rand = randomIntFromInterval(0,planets.length-1);
                 let tries = 0;
@@ -275,17 +275,20 @@ $.getScript('./js/quintus_conf.js', function()
                     let to_send = randomIntFromInterval(1, Q.stage(0).current_attack.from.p.population);
                     confirm_atk(to_send);
                     change_turn();
-                }, 5000);
+                }, 2500);
             }
         }
         
         function findepartie(isPlayer){
             if(isPlayer){
-                alert("le joueur n° a gagné !");
+                toastr.success("Vous avez gagné !");
             }
             else{
-                alert("le bot n°"+(Q.tour_actuel+1)+" a gagné ! Vous avez perdu.. ");
+                toastr.error("Défaite ! Le bot n°"+(Q.tour_actuel+1)+" a gagné !");
             }
+            setTimeout(function(){
+                window.location.href = "./index.php";
+            },5000);
         }
         
         change_turn = function(){
