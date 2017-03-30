@@ -11,7 +11,19 @@
         <script src="lib/toastr.min.js"></script>
     </head>
     <body>
-        <div id="HUD">
+        <div id="HUD"><?php
+            for($i = 0; $i<($_POST["nb_ennemies"]+1);$i++){
+                if($i == 0){
+                    echo "<div id = 'player_".($i+1)."' class = 'players_hud hud_my_turn'>";
+                }
+                else{
+                    echo "<div id = 'player_".($i+1)."' class = 'players_hud'>";
+                }
+                echo "Joueur ".($i+1);
+                echo "</div>";
+            }
+            
+            ?>
         </div>
         <div id="full_background_atk" class="none hide"></div>
         <div id="attack_menu" class="none hide">

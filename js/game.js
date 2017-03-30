@@ -31,6 +31,7 @@ $.getScript('./js/quintus_conf.js', function()
         var nb_players = 0;
         Q.tour_actuel = 0;
         var planets = [];
+        var grow = false;
         
         var players_left = [];
         var player_colors = [
@@ -232,10 +233,12 @@ $.getScript('./js/quintus_conf.js', function()
         
         function eliminerJoueur(i){
             document.getElementById("player_"+(i+1)).classList.add("joueur_mort");
+            toastr.error("Le joueur "+ (i+1) +" a été éliminé.");
             players_left[i]=0;
         }
         
         function jouerBot(){
+            
             let stage = Q.stage(0);
             
             let max = 0;
@@ -255,7 +258,7 @@ $.getScript('./js/quintus_conf.js', function()
                 console.log("something went wrong, no planets to make an action. Passing onto the next player.");
                 setTimeout(function() {
                     change_turn();
-                }, 1000);
+                }, 100);
             } else {
                 let rand = randomIntFromInterval(0,planets.length-1);
                 let tries = 0;
@@ -275,7 +278,7 @@ $.getScript('./js/quintus_conf.js', function()
                     let to_send = randomIntFromInterval(1, Q.stage(0).current_attack.from.p.population);
                     confirm_atk(to_send);
                     change_turn();
-                }, 2500);
+                }, 100);
             }
         }
         
@@ -287,8 +290,8 @@ $.getScript('./js/quintus_conf.js', function()
                 toastr.error("Défaite ! Le bot n°"+(Q.tour_actuel+1)+" a gagné !");
             }
             setTimeout(function(){
-                window.location.href = "./index.php";
-            },5000);
+                    window.location.href = "./index.php";
+                },5000);
         }
         
         change_turn = function(){
@@ -298,6 +301,16 @@ $.getScript('./js/quintus_conf.js', function()
             let stage = Q.stage(0);
             document.getElementById("player_" + (Q.tour_actuel + 1)).classList.remove("hud_my_turn");
             Q.tour_actuel = ((Q.tour_actuel +1)%nb_players);
+            
+            if(Q.tour_actuel != 0 && !grow){
+                grow = true;
+            }
+            
+            if(Q.tour_actuel == 0 && grow == true){
+                planets.forEach(function(element){
+                        element.p.inc_pop();
+                    });
+            }
             
             for(i = 0; i<nb_players; i++){
                 nb_plan_players.push(0);
@@ -323,7 +336,10 @@ $.getScript('./js/quintus_conf.js', function()
                 }
             });
             
-            if(players_left[0] == 0){
+            if(players_left[0] == 0 && nbPlayersLeft == 1){
+                Q.tour_actuel = players_left.findIndex(function(element){
+                    return element == 1;
+                });
                 findepartie(false);
             }
             else if(players_left[0] == 1 && nbPlayersLeft == 1){
@@ -333,6 +349,11 @@ $.getScript('./js/quintus_conf.js', function()
                 
                 while(players_left[Q.tour_actuel]!=1){
                     Q.tour_actuel = ((Q.tour_actuel +1)%nb_players);
+                    if(Q.tour_actuel == 0 && grow == true){
+                        planets.forEach(function(element){
+                            element.p.inc_pop();
+                        });
+                    }
                 }
                 
                 stage.items.forEach(function(item){
@@ -347,16 +368,30 @@ $.getScript('./js/quintus_conf.js', function()
                 });
                 
                 
-                document.getElementById("player_" + (Q.tour_actuel + 1)).classList.add("hud_my_turn");        
+                document.getElementById("player_" + (Q.tour_actuel + 1)).classList.add("hud_my_turn");
+                
+                let finished_moves = false;
+            
+                while(!finished_moves){
+                    finished_moves = true;
+                    console.log("deb boucle");
+                    stage.items.forEach(function(element){
+                        if(element.p.sheet == "spaceship"){
+                            if(element.p.moving == true){
+                                console.log("vaisseau bouge");
+                                finished_moves = false;
+                            }
+                        }
+                    });
+                }
+                console.log("sortie boucle");
             
                 if(Q.tour_actuel != 0){
+                    
                     document.getElementById("turn_bt").disabled = true;
                     jouerBot();
                 }
                 else{
-                    planets.forEach(function(element){
-                        element.p.inc_pop();
-                    });
                     document.getElementById("turn_bt").disabled = false;
                 }
             }
@@ -436,7 +471,7 @@ $.getScript('./js/quintus_conf.js', function()
             }
             
             //Mise en place de l'HUD
-            let hud = document.getElementById("HUD");
+            /*let hud = document.getElementById("HUD");
             for (var i = 0; i < nb_players; i++) {
                 let play_hud = document.createElement("div");
                 play_hud.setAttribute("id", "player_" + (i + 1));
@@ -446,7 +481,7 @@ $.getScript('./js/quintus_conf.js', function()
                     play_hud.classList.add("hud_my_turn");
                 }
                 hud.appendChild(play_hud);
-            }
+            }*/
             
             stage.add('viewport');
             init_tour();
