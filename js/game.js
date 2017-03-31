@@ -258,7 +258,7 @@ $.getScript('./js/quintus_conf.js', function()
                 console.log("something went wrong, no planets to make an action. Passing onto the next player.");
                 setTimeout(function() {
                     change_turn();
-                }, 2500);
+                }, 750);
             } else {
                 let rand = randomIntFromInterval(0,planets.length-1);
                 let tries = 0;
@@ -278,7 +278,7 @@ $.getScript('./js/quintus_conf.js', function()
                     let to_send = randomIntFromInterval(1, Q.stage(0).current_attack.from.p.population);
                     confirm_atk(to_send);
                     change_turn();
-                }, 2500);
+                }, 750);
             }
         }
         
@@ -294,7 +294,36 @@ $.getScript('./js/quintus_conf.js', function()
                 },5000);
         }
         
+        function wait_ships() {
+            let stage = Q.stage(0);
+            
+            let ships_are_moving = false;
+            
+            stage.items.forEach(function(thing) {
+               if (thing.p.sheet == "spaceship") {
+                    if (thing.p.my_turn == true) {
+                        ships_are_moving = true;
+                    }
+               } 
+            });
+            
+            if (!ships_are_moving) {
+                if(Q.tour_actuel != 0){
+                    
+                    document.getElementById("turn_bt").disabled = true;
+                    jouerBot();
+                }
+                else{
+                    document.getElementById("turn_bt").disabled = false;
+                }
+            } else {
+                setTimeout(wait_ships, 500);
+            }
+        }
+        
         change_turn = function(){
+            
+            document.getElementById("turn_bt").disabled = true;
             
             let nb_plan_players = [];
             let nbPlayersLeft = 0;
@@ -361,7 +390,7 @@ $.getScript('./js/quintus_conf.js', function()
                         if(item.p.player == Q.tour_actuel + 1){
                             item.p.my_turn = true;
                         }
-                        else{
+                        else if (item.p.sheet == "planets") {
                             item.p.my_turn = false;
                         }
                     }
@@ -370,14 +399,7 @@ $.getScript('./js/quintus_conf.js', function()
                 
                 document.getElementById("player_" + (Q.tour_actuel + 1)).classList.add("hud_my_turn");
                 
-                if(Q.tour_actuel != 0){
-                    
-                    document.getElementById("turn_bt").disabled = true;
-                    jouerBot();
-                }
-                else{
-                    document.getElementById("turn_bt").disabled = false;
-                }
+                wait_ships();
             }
         }
         
