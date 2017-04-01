@@ -65,7 +65,7 @@ Q.Sprite.extend('Planet', {
         if (!this.p.dragging && this.p.population > 0 && this.p.player == 1 && this.p.my_turn) {
             this.p.dragging = true;
             this.p.spawned_ship = stage.insert(new Q.Ship({x:touch.x, y:touch.y,orig_pos:[this.p.x,this.p.y],stroke_color:this.p.pl_color}));
-        } else {
+        } else if(this.p.my_turn){
             //Si le vaisseau sous la souris est bien défini
             if (this.p.spawned_ship != undefined) {
                 //Recalcul de son angle par rapport à la planète de départ
@@ -99,54 +99,56 @@ Q.Sprite.extend('Planet', {
     },
     //Appelée à la fin d'un évenement de drag.
     touchEnd: function(touch) {
-        //Fin du drag
-        this.p.dragging = false;
-        //récuperation du stage
-        let stage = Q.stage(0);
-        //Le vaisseau existe bien
-        if (this.p.spawned_ship != undefined) {
-            //stockage du this
-            let temp_vm = this;
-            //On parcourt les planètes
-            stage.items.forEach(function(thing) {
-                if (thing.p.sheet == 'planets') {
-                    //c'est une planète
-                    if (thing.p.pop_label_container.p.fill == "white") {
-                        //Bingo, elle est sélectionnée (vaisseau au dessus)
-                        thing.p.pop_label_container.p.fill = "#424242";
-                        //On calcule les données pour un éventuel transfert de population
-                        let distance = (Math.abs(thing.p.x - temp_vm.p.x) + Math.abs(thing.p.y - temp_vm.p.y));
-                        stage.current_attack = {
-                            from : temp_vm,
-                            to : thing,
-                            distance : distance,
-                            duration : Math.ceil( distance / temp_vm.p.spawned_ship.p.speed)
-                        };
-                        //On affiche et configure le popup de transfert de population
-                        document.getElementById("full_background_atk").classList.remove("hide");
-                        document.getElementById("attack_form").classList.remove("hide");
-                        document.getElementById("attack_menu").classList.remove("hide");
-                        document.getElementById("attack_start").value = temp_vm.p.name;
-                        document.getElementById("attack_target").value = thing.p.name;
-                        document.getElementById("attack_start_pop_max").value = temp_vm.p.population;
-                        if (thing.p.player == 0) {
-                            //Target planet is neutral, hide its population
-                            document.getElementById("attack_target_pop").value = "?";
+        if(this.p.my_turn){
+            //Fin du drag
+            this.p.dragging = false;
+            //récuperation du stage
+            let stage = Q.stage(0);
+            //Le vaisseau existe bien
+            if (this.p.spawned_ship != undefined) {
+                //stockage du this
+                let temp_vm = this;
+                //On parcourt les planètes
+                stage.items.forEach(function(thing) {
+                    if (thing.p.sheet == 'planets') {
+                        //c'est une planète
+                        if (thing.p.pop_label_container.p.fill == "white") {
+                            //Bingo, elle est sélectionnée (vaisseau au dessus)
+                            thing.p.pop_label_container.p.fill = "#424242";
+                            //On calcule les données pour un éventuel transfert de population
+                            let distance = (Math.abs(thing.p.x - temp_vm.p.x) + Math.abs(thing.p.y - temp_vm.p.y));
+                            stage.current_attack = {
+                                from : temp_vm,
+                                to : thing,
+                                distance : distance,
+                                duration : Math.ceil( distance / temp_vm.p.spawned_ship.p.speed)
+                            };
+                            //On affiche et configure le popup de transfert de population
+                            document.getElementById("full_background_atk").classList.remove("hide");
+                            document.getElementById("attack_form").classList.remove("hide");
+                            document.getElementById("attack_menu").classList.remove("hide");
+                            document.getElementById("attack_start").value = temp_vm.p.name;
+                            document.getElementById("attack_target").value = thing.p.name;
+                            document.getElementById("attack_start_pop_max").value = temp_vm.p.population;
+                            if (thing.p.player == 0) {
+                                //Target planet is neutral, hide its population
+                                document.getElementById("attack_target_pop").value = "?";
+                            } else {
+                                //Target planet isn't neutral, show its population
+                                document.getElementById("attack_target_pop").value = thing.p.population;
+                            }
+                            document.getElementById("attack_pop").value = 1;
+                            document.getElementById("attack_pop").min = 1;
+                            document.getElementById("attack_pop").max = temp_vm.p.population;
+                            document.getElementById("arrival").value = stage.current_attack.duration + " tours";
                         } else {
-                            //Target planet isn't neutral, show its population
-                            document.getElementById("attack_target_pop").value = thing.p.population;
+                            //cette planète n'est pas sélectionnée, on ne fait rien
                         }
-                        document.getElementById("attack_pop").value = 1;
-                        document.getElementById("attack_pop").min = 1;
-                        document.getElementById("attack_pop").max = temp_vm.p.population;
-                        document.getElementById("arrival").value = stage.current_attack.duration + " tours";
-                    } else {
-                        //cette planète n'est pas sélectionnée, on ne fait rien
                     }
-                }
-            });
-            //Une fois qu'on a vérifié si il y avait une planète sélectionnée (si oui, on a déjà affiché le popup), on supprime le vaisseau sous le curseur
-            this.p.spawned_ship.destroy();
+                });
+                //Une fois qu'on a vérifié si il y avait une planète sélectionnée (si oui, on a déjà affiché le popup), on supprime le vaisseau sous le curseur
+                this.p.spawned_ship.destroy();
+            }
         }
     }
 });
