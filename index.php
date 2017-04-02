@@ -45,7 +45,7 @@
                         <li>Cliquer et maintenir enfoncé le clique sur une planète alliée</li>
                         <li>Glisser la souris en restant appuyé jusque une autre planète</li>
                         <li>Relâcher la souris pour démarrer le transfert ou l'attaque (Si relâché dans le vide, annulation)</li>
-                        <li>Si on relâche sur une planète, un popup apparait, il suffit alors de vérifier les données, de remplir le champs pour la population à envoyer, et de confirmer ou non l'action.</li>
+                        <li>Si on relâche sur une planète, un popup apparait, il suffit alors de vérifier les données, de remplir le champ pour la population à envoyer, et de confirmer ou non l'action.</li>
                     </ul>
                 </li>
                 <li>La partie se termine dès qu'il ne reste qu'un joueur en vie.</li>
